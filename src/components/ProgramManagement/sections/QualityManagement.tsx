@@ -217,4 +217,19 @@ const QualityManagement: React.FC<QualityManagementProps> = ({
                     <div className="flex items-center justify-between text-sm">
                       <span className={`${
                         darkMode ? 'text-gray-400' : 'text-gray-500'
-                      }`
+                      }`}>{issue.reportedBy}</span>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className={darkMode ? 'text-gray-300' : 'text-gray-600'}>No quality issues data available</div>
+              )}
+            </div>
+          </div>
+        </div>
+      </CollapsibleSection>
+    </div>
+  );
+};
+
+export default QualityManagement;
