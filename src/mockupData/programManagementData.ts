@@ -188,6 +188,20 @@ export interface Stakeholder {
     phone: string;
     address: string;
   };
+  communicationPreferences?: {
+    preferredChannel: 'Email' | 'Phone' | 'Meeting' | 'Report';
+    frequency: 'Daily' | 'Weekly' | 'Monthly' | 'Quarterly';
+    bestTime: string;
+  };
+  satisfaction?: number;
+  impact?: 'Critical' | 'High' | 'Medium' | 'Low';
+  actionItems?: {
+    id: string;
+    title: string;
+    status: 'Open' | 'In Progress' | 'Completed';
+    dueDate: string;
+    priority: 'High' | 'Medium' | 'Low';
+  }[];
 }
 
 export interface EngagementActivity {
@@ -202,6 +216,14 @@ export interface EngagementActivity {
   location: string;
   duration: string;
   agenda: string[];
+  satisfaction?: number;
+  followUpActions?: {
+    id: string;
+    description: string;
+    assignedTo: string;
+    dueDate: string;
+    status: 'Open' | 'In Progress' | 'Completed';
+  }[];
 }
 
 export interface StakeholderManagement {
@@ -222,11 +244,11 @@ export interface StakeholderManagement {
 }
 
 export interface QualityMetric {
-  name: string;
-  value: number;
+  name?: string;
+  value?: number;
   target: number;
-  unit: string;
-  status: 'Meeting' | 'Not Meeting' | 'At Risk';
+  unit?: string;
+  status?: 'Meeting' | 'Not Meeting' | 'At Risk';
   date: string;
   planned: number;
   actual: number;
@@ -236,22 +258,65 @@ export interface QualityIssue {
   id: string;
   title: string;
   description: string;
-  severity: 'High' | 'Medium' | 'Low';
-  status: 'Open' | 'In Progress' | 'Closed';
-  resolutionDate: string | null;
+  severity: 'Critical' | 'High' | 'Medium' | 'Low';
+  status: 'Open' | 'In Progress' | 'Resolved' | 'Closed';
+  resolutionDate?: string | null;
   component: string;
   reportedBy: string;
   dateReported: string;
   lastUpdated: string;
+  assignedTo?: string;
+  resolution?: string;
+  impactAreas?: string[];
+  relatedIssues?: string[];
 }
 
 export interface QualityTrend {
   date: string;
   defects: number;
-  resolved: number;
-  open: number;
+  resolved?: number;
+  open?: number;
   rework: number;
   compliance: number;
+}
+
+export interface ProcessAdherence {
+  process: string;
+  adherenceRate: number;
+  trend: 'Improving' | 'Stable' | 'Declining';
+}
+
+export interface QualityMetricsSummary {
+  defectDensity: number;
+  testCoverage: number;
+  codeReviewCoverage: number;
+  automationRate: number;
+  firstTimePassRate: number;
+  technicalDebtIndex: number;
+}
+
+export interface QualityImprovement {
+  id: string;
+  title: string;
+  description: string;
+  status: 'Planned' | 'In Progress' | 'Completed' | 'Canceled';
+  startDate: string;
+  targetDate: string;
+  actualDate?: string;
+  leader: string;
+  type: 'Process' | 'Tool' | 'Training' | 'Infrastructure';
+  impact: 'High' | 'Medium' | 'Low';
+  metrics: string[];
+  progress: number;
+}
+
+export interface RootCauseCategory {
+  category: string;
+  count: number;
+  subcategories?: {
+    name: string;
+    count: number;
+  }[];
 }
 
 export interface QualityManagement {
@@ -260,50 +325,81 @@ export interface QualityManagement {
   qualityTrends: QualityTrend[];
   complianceStatus: {
     standard: string;
-    status: 'Compliant' | 'Non-Compliant';
+    status: 'Compliant' | 'Partially Compliant' | 'Non-Compliant';
     lastAudit: string;
     nextAudit: string;
     findings: string[];
   }[];
+  qualityMetricsSummary?: QualityMetricsSummary;
+  processAdherence?: ProcessAdherence[];
+  qualityImprovements?: QualityImprovement[];
+  rootCauseAnalysis?: RootCauseCategory[];
+  qualityScorecard?: {
+    overall: number;
+    categories: {
+      name: string;
+      score: number;
+      weight: number;
+    }[];
+    previousScore: number;
+    trend: 'Improving' | 'Stable' | 'Declining';
+  };
 }
 
 export interface Supplier {
   id: string;
   name: string;
   category: string;
-  performance: number;
-  risk: 'Low' | 'Medium' | 'High';
   status: 'Active' | 'At Risk' | 'Inactive';
+  performance: number;
   lastAssessment: string;
   nextAssessment: string;
   issues: string[];
+  location: string;
   contactInfo: {
+    name: string;
     email: string;
     phone: string;
-    address: string;
   };
-  metrics: {
-    onTimeDelivery: number;
-    qualityScore: number;
-    costEfficiency: number;
+  leadTime: number; // in days
+  onTimeDeliveryRate: number;
+  qualityRating: number;
+  contractDetails?: {
+    startDate: string;
+    endDate: string;
+    value: number;
+    terms: string;
   };
+  certifications?: string[];
+  riskLevel: 'Low' | 'Medium' | 'High';
+  alternativeSuppliers?: string[];
 }
 
 export interface Order {
   id: string;
   supplierId: string;
-  supplier: string;
   item: string;
-  items: string[];
   quantity: number;
-  status: 'In Transit' | 'Delayed' | 'Pending' | 'Delivered';
+  status: 'Pending' | 'In Transit' | 'Delivered' | 'Delayed' | 'Canceled';
   orderDate: string;
-  expectedDate: string;
   expectedDelivery: string;
-  trackingNumber: string;
-  cost: number;
-  priority: 'High' | 'Medium' | 'Low';
-  notes: string;
+  actualDelivery?: string;
+  price: number;
+  totalCost: number;
+  trackingInfo?: {
+    trackingNumber: string;
+    carrier: string;
+    currentLocation?: string;
+    estimatedArrival: string;
+    lastUpdated: string;
+  };
+  qualityInspection?: {
+    passed: boolean;
+    date: string;
+    inspector: string;
+    notes: string;
+  };
+  priority: 'Low' | 'Medium' | 'High' | 'Critical';
 }
 
 export interface SupplyChainTrend {
@@ -313,20 +409,73 @@ export interface SupplyChainTrend {
   delays: number;
   costVariance: number;
   qualityIssues: number;
+  onTimeDeliveryRate: number;
+  averageLeadTime: number;
+  backorderedItems: number;
+}
+
+export interface InventoryItem {
+  item: string;
+  current: number;
+  minimum: number;
+  maximum: number;
+  reorderPoint: number;
+  location: string;
+  status: 'In Stock' | 'Low Stock' | 'Out of Stock';
+  category: string;
+  unitCost: number;
+  totalValue: number;
+  lastRestocked: string;
+  turnoverRate: number;
+  supplier: string;
+  leadTime: number;
+  demandForecast: number;
+  itemCritical: boolean;
+}
+
+export interface SupplyChainKPI {
+  name: string;
+  value: number;
+  target: number;
+  unit: string;
+  trend: 'Improving' | 'Declining' | 'Stable';
+  periodChange: number;
+}
+
+export interface SupplyChainRisk {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  impact: 'Low' | 'Medium' | 'High';
+  probability: 'Low' | 'Medium' | 'High';
+  status: 'Identified' | 'Monitoring' | 'Mitigated' | 'Occurred';
+  mitigation: string;
+  owner: string;
+  suppliers: string[];
+  lastUpdated: string;
 }
 
 export interface SupplyChainManagement {
   suppliers: Supplier[];
   orders: Order[];
   supplyChainTrends: SupplyChainTrend[];
-  inventoryLevels: {
-    item: string;
-    current: number;
-    minimum: number;
-    maximum: number;
-    reorderPoint: number;
-    location: string;
-    status: 'In Stock' | 'Low Stock' | 'Out of Stock';
+  inventoryLevels: InventoryItem[];
+  keyMetrics: SupplyChainKPI[];
+  risks: SupplyChainRisk[];
+  sustainabilityMetrics?: {
+    carbonFootprint: number; // in metric tons CO2
+    recycledMaterials: number; // percentage
+    energyEfficiency: number; // rating 1-100
+    wasteReduction: number; // percentage change
+    transportationEfficiency: number; // rating 1-100
+  };
+  demandForecasting: {
+    period: string;
+    predictedDemand: number;
+    actualDemand?: number;
+    variance?: number;
+    confidence: number;
   }[];
 }
 
@@ -1410,26 +1559,1456 @@ export const mockProgramManagementData: ProgramManagementData = {
     ]
   },
   stakeholderManagement: {
-    stakeholders: [],
-    engagementActivities: [],
-    engagementTrends: [],
+    stakeholders: [
+      {
+        id: 'STK001',
+        name: 'John Smith',
+        role: 'Program Manager',
+        organization: 'Siemens Energy',
+        interest: 'High',
+        influence: 'High',
+        communicationFrequency: 'Weekly',
+        engagement: 'Active',
+        lastContact: '2023-03-15',
+        nextContact: '2023-03-22',
+        notes: 'Key decision maker for budget allocations. Prefers detailed reporting and data-driven insights.',
+        status: 'Active',
+        contactInfo: {
+          email: 'john.smith@siemens-energy.com',
+          phone: '+1-555-1234',
+          address: '123 Energy Plaza, Houston, TX'
+        },
+        communicationPreferences: {
+          preferredChannel: 'Email',
+          frequency: 'Weekly',
+          bestTime: 'Morning (8-10am)'
+        },
+        satisfaction: 85,
+        impact: 'Critical',
+        actionItems: [
+          {
+            id: '1',
+            title: 'Review Q2 project plan',
+            status: 'In Progress',
+            dueDate: '2023-03-30',
+            priority: 'High'
+          },
+          {
+            id: '2',
+            title: 'Schedule executive presentation',
+            status: 'Open',
+            dueDate: '2023-04-15',
+            priority: 'Medium'
+          }
+        ]
+      },
+      {
+        id: 'STK002',
+        name: 'Sarah Johnson',
+        role: 'Technical Lead',
+        organization: 'Siemens Digital Industries',
+        interest: 'High',
+        influence: 'Medium',
+        communicationFrequency: 'Bi-weekly',
+        engagement: 'Active',
+        lastContact: '2023-03-10',
+        nextContact: '2023-03-24',
+        notes: 'Technical subject matter expert. Prefers direct communication about technical issues.',
+        status: 'Active',
+        contactInfo: {
+          email: 'sarah.johnson@siemens.com',
+          phone: '+1-555-2345',
+          address: '456 Innovation Drive, Princeton, NJ'
+        },
+        communicationPreferences: {
+          preferredChannel: 'Meeting',
+          frequency: 'Weekly',
+          bestTime: 'Afternoon (2-4pm)'
+        },
+        satisfaction: 78,
+        impact: 'High',
+        actionItems: [
+          {
+            id: '3',
+            title: 'Review technical documentation',
+            status: 'Completed',
+            dueDate: '2023-03-15',
+            priority: 'High'
+          },
+          {
+            id: '4',
+            title: 'Coordinate with engineering team',
+            status: 'In Progress',
+            dueDate: '2023-03-28',
+            priority: 'Medium'
+          }
+        ]
+      },
+      {
+        id: 'STK003',
+        name: 'Michael Chen',
+        role: 'Customer Representative',
+        organization: 'Client XYZ',
+        interest: 'Medium',
+        influence: 'High',
+        communicationFrequency: 'Monthly',
+        engagement: 'Neutral',
+        lastContact: '2023-02-28',
+        nextContact: '2023-03-30',
+        notes: 'Important client stakeholder. Concerned about timeline and deliverables.',
+        status: 'Active',
+        contactInfo: {
+          email: 'michael.chen@clientxyz.com',
+          phone: '+1-555-3456',
+          address: '789 Client Way, Chicago, IL'
+        },
+        communicationPreferences: {
+          preferredChannel: 'Phone',
+          frequency: 'Monthly',
+          bestTime: 'Late Afternoon (4-5pm)'
+        },
+        satisfaction: 65,
+        impact: 'High',
+        actionItems: [
+          {
+            id: '5',
+            title: 'Address timeline concerns',
+            status: 'Open',
+            dueDate: '2023-04-05',
+            priority: 'High'
+          }
+        ]
+      },
+      {
+        id: 'STK004',
+        name: 'Emily Rodriguez',
+        role: 'Regulatory Affairs',
+        organization: 'Siemens Compliance',
+        interest: 'Low',
+        influence: 'Medium',
+        communicationFrequency: 'Monthly',
+        engagement: 'Neutral',
+        lastContact: '2023-03-05',
+        nextContact: '2023-04-05',
+        notes: 'Oversees compliance and regulatory aspects of the program.',
+        status: 'Active',
+        contactInfo: {
+          email: 'emily.rodriguez@siemens.com',
+          phone: '+1-555-4567',
+          address: '321 Compliance Ave, Washington DC'
+        },
+        communicationPreferences: {
+          preferredChannel: 'Email',
+          frequency: 'Monthly',
+          bestTime: 'Morning (9-11am)'
+        },
+        satisfaction: 72,
+        impact: 'Medium',
+        actionItems: [
+          {
+            id: '6',
+            title: 'Submit regulatory documents',
+            status: 'In Progress',
+            dueDate: '2023-04-10',
+            priority: 'Medium'
+          }
+        ]
+      },
+      {
+        id: 'STK005',
+        name: 'David Patel',
+        role: 'Finance Director',
+        organization: 'Siemens Financial',
+        interest: 'Medium',
+        influence: 'Medium',
+        communicationFrequency: 'Monthly',
+        engagement: 'Active',
+        lastContact: '2023-03-12',
+        nextContact: '2023-04-12',
+        notes: 'Oversees budget allocation and financial reporting.',
+        status: 'Active',
+        contactInfo: {
+          email: 'david.patel@siemens.com',
+          phone: '+1-555-5678',
+          address: '555 Financial District, New York, NY'
+        },
+        communicationPreferences: {
+          preferredChannel: 'Report',
+          frequency: 'Monthly',
+          bestTime: 'End of Month'
+        },
+        satisfaction: 80,
+        impact: 'Medium',
+        actionItems: [
+          {
+            id: '7',
+            title: 'Prepare Q2 financial forecast',
+            status: 'Open',
+            dueDate: '2023-04-20',
+            priority: 'High'
+          }
+        ]
+      },
+      {
+        id: 'STK006',
+        name: 'Robert Taylor',
+        role: 'Engineering Manager',
+        organization: 'Siemens Technology',
+        interest: 'High',
+        influence: 'Low',
+        communicationFrequency: 'Weekly',
+        engagement: 'Active',
+        lastContact: '2023-03-17',
+        nextContact: '2023-03-24',
+        notes: 'Manages the engineering team working on technical implementation.',
+        status: 'Active',
+        contactInfo: {
+          email: 'robert.taylor@siemens.com',
+          phone: '+1-555-6789',
+          address: '777 Engineering Blvd, Austin, TX'
+        },
+        communicationPreferences: {
+          preferredChannel: 'Meeting',
+          frequency: 'Weekly',
+          bestTime: 'Morning (10-11am)'
+        },
+        satisfaction: 88,
+        impact: 'Medium',
+        actionItems: [
+          {
+            id: '8',
+            title: 'Review resource allocation',
+            status: 'Completed',
+            dueDate: '2023-03-15',
+            priority: 'Medium'
+          }
+        ]
+      }
+    ],
+    engagementActivities: [
+      {
+        id: 'EA001',
+        title: 'Program Kickoff Meeting',
+        date: '2023-03-01',
+        type: 'Meeting',
+        attendees: ['John Smith', 'Sarah Johnson', 'Michael Chen', 'David Patel', 'Robert Taylor'],
+        status: 'Completed',
+        outcome: 'Program objectives and timelines established',
+        nextSteps: 'Follow up with individual stakeholder meetings',
+        location: 'Main Conference Room',
+        duration: '2 hours',
+        agenda: ['Introduction', 'Program Objectives', 'Timeline Overview', 'Risk Assessment', 'Q&A'],
+        satisfaction: 92,
+        followUpActions: [
+          {
+            id: '1',
+            description: 'Distribute meeting minutes',
+            assignedTo: 'John Smith',
+            dueDate: '2023-03-03',
+            status: 'Completed'
+          },
+          {
+            id: '2',
+            description: 'Schedule technical deep dive',
+            assignedTo: 'Sarah Johnson',
+            dueDate: '2023-03-10',
+            status: 'Completed'
+          }
+        ]
+      },
+      {
+        id: 'EA002',
+        title: 'Technical Deep Dive',
+        date: '2023-03-10',
+        type: 'Workshop',
+        attendees: ['Sarah Johnson', 'Robert Taylor', 'Engineering Team'],
+        status: 'Completed',
+        outcome: 'Technical approach finalized',
+        nextSteps: 'Begin implementation planning',
+        location: 'Engineering Lab',
+        duration: '3 hours',
+        agenda: ['Technical Requirements', 'Architecture Review', 'Implementation Plan'],
+        satisfaction: 85,
+        followUpActions: [
+          {
+            id: '3',
+            description: 'Document technical specifications',
+            assignedTo: 'Sarah Johnson',
+            dueDate: '2023-03-17',
+            status: 'In Progress'
+          }
+        ]
+      },
+      {
+        id: 'EA003',
+        title: 'Client Status Update',
+        date: '2023-03-15',
+        type: 'Review',
+        attendees: ['John Smith', 'Michael Chen', 'Client Team'],
+        status: 'Completed',
+        outcome: 'Progress update provided, client concerns addressed',
+        nextSteps: 'Adjust timeline based on feedback',
+        location: 'Virtual Meeting',
+        duration: '1 hour',
+        agenda: ['Progress Update', 'Timeline Review', 'Issues and Concerns', 'Next Steps'],
+        satisfaction: 78,
+        followUpActions: [
+          {
+            id: '4',
+            description: 'Revise project timeline document',
+            assignedTo: 'John Smith',
+            dueDate: '2023-03-22',
+            status: 'Open'
+          },
+          {
+            id: '5',
+            description: 'Schedule follow-up with client',
+            assignedTo: 'John Smith',
+            dueDate: '2023-03-25',
+            status: 'Open'
+          }
+        ]
+      },
+      {
+        id: 'EA004',
+        title: 'Budget Review Meeting',
+        date: '2023-03-17',
+        type: 'Review',
+        attendees: ['John Smith', 'David Patel', 'Finance Team'],
+        status: 'Completed',
+        outcome: 'Budget tracking on target, minor adjustments made',
+        nextSteps: 'Update financial forecasts',
+        location: 'Finance Conference Room',
+        duration: '1.5 hours',
+        agenda: ['Budget Status', 'Expense Review', 'Financial Projections'],
+        satisfaction: 90,
+        followUpActions: [
+          {
+            id: '6',
+            description: 'Update Q2 financial projections',
+            assignedTo: 'David Patel',
+            dueDate: '2023-03-24',
+            status: 'In Progress'
+          }
+        ]
+      },
+      {
+        id: 'EA005',
+        title: 'Compliance Check-in',
+        date: '2023-03-20',
+        type: 'Meeting',
+        attendees: ['Emily Rodriguez', 'John Smith'],
+        status: 'Scheduled',
+        outcome: '',
+        nextSteps: '',
+        location: 'Small Conference Room',
+        duration: '1 hour',
+        agenda: ['Regulatory Requirements', 'Documentation Status', 'Compliance Timeline'],
+        satisfaction: 0,
+        followUpActions: []
+      }
+    ],
+    engagementTrends: [
+      {
+        date: '2022-10',
+        active: 3,
+        neutral: 2,
+        resistant: 1
+      },
+      {
+        date: '2022-11',
+        active: 3,
+        neutral: 3,
+        resistant: 0
+      },
+      {
+        date: '2022-12',
+        active: 4,
+        neutral: 2,
+        resistant: 0
+      },
+      {
+        date: '2023-01',
+        active: 5,
+        neutral: 1,
+        resistant: 0
+      },
+      {
+        date: '2023-02',
+        active: 4,
+        neutral: 2,
+        resistant: 0
+      },
+      {
+        date: '2023-03',
+        active: 5,
+        neutral: 1,
+        resistant: 0
+      }
+    ],
     stakeholderMatrix: {
-      highInterestHighInfluence: [],
-      highInterestLowInfluence: [],
-      lowInterestHighInfluence: [],
-      lowInterestLowInfluence: []
+      highInterestHighInfluence: [
+        {
+          id: 'STK001',
+          name: 'John Smith',
+          role: 'Program Manager',
+          organization: 'Siemens Energy',
+          interest: 'High',
+          influence: 'High',
+          communicationFrequency: 'Weekly',
+          engagement: 'Active',
+          lastContact: '2023-03-15',
+          nextContact: '2023-03-22',
+          notes: 'Key decision maker for budget allocations. Prefers detailed reporting and data-driven insights.',
+          status: 'Active',
+          contactInfo: {
+            email: 'john.smith@siemens-energy.com',
+            phone: '+1-555-1234',
+            address: '123 Energy Plaza, Houston, TX'
+          },
+          communicationPreferences: {
+            preferredChannel: 'Email',
+            frequency: 'Weekly',
+            bestTime: 'Morning (8-10am)'
+          },
+          satisfaction: 85,
+          impact: 'Critical',
+          actionItems: [
+            {
+              id: '1',
+              title: 'Review Q2 project plan',
+              status: 'In Progress',
+              dueDate: '2023-03-30',
+              priority: 'High'
+            },
+            {
+              id: '2',
+              title: 'Schedule executive presentation',
+              status: 'Open',
+              dueDate: '2023-04-15',
+              priority: 'Medium'
+            }
+          ]
+        }
+      ],
+      highInterestLowInfluence: [
+        {
+          id: 'STK006',
+          name: 'Robert Taylor',
+          role: 'Engineering Manager',
+          organization: 'Siemens Technology',
+          interest: 'High',
+          influence: 'Low',
+          communicationFrequency: 'Weekly',
+          engagement: 'Active',
+          lastContact: '2023-03-17',
+          nextContact: '2023-03-24',
+          notes: 'Manages the engineering team working on technical implementation.',
+          status: 'Active',
+          contactInfo: {
+            email: 'robert.taylor@siemens.com',
+            phone: '+1-555-6789',
+            address: '777 Engineering Blvd, Austin, TX'
+          },
+          communicationPreferences: {
+            preferredChannel: 'Meeting',
+            frequency: 'Weekly',
+            bestTime: 'Morning (10-11am)'
+          },
+          satisfaction: 88,
+          impact: 'Medium',
+          actionItems: [
+            {
+              id: '8',
+              title: 'Review resource allocation',
+              status: 'Completed',
+              dueDate: '2023-03-15',
+              priority: 'Medium'
+            }
+          ]
+        },
+        {
+          id: 'STK002',
+          name: 'Sarah Johnson',
+          role: 'Technical Lead',
+          organization: 'Siemens Digital Industries',
+          interest: 'High',
+          influence: 'Medium',
+          communicationFrequency: 'Bi-weekly',
+          engagement: 'Active',
+          lastContact: '2023-03-10',
+          nextContact: '2023-03-24',
+          notes: 'Technical subject matter expert. Prefers direct communication about technical issues.',
+          status: 'Active',
+          contactInfo: {
+            email: 'sarah.johnson@siemens.com',
+            phone: '+1-555-2345',
+            address: '456 Innovation Drive, Princeton, NJ'
+          },
+          communicationPreferences: {
+            preferredChannel: 'Meeting',
+            frequency: 'Weekly',
+            bestTime: 'Afternoon (2-4pm)'
+          },
+          satisfaction: 78,
+          impact: 'High',
+          actionItems: [
+            {
+              id: '3',
+              title: 'Review technical documentation',
+              status: 'Completed',
+              dueDate: '2023-03-15',
+              priority: 'High'
+            },
+            {
+              id: '4',
+              title: 'Coordinate with engineering team',
+              status: 'In Progress',
+              dueDate: '2023-03-28',
+              priority: 'Medium'
+            }
+          ]
+        }
+      ],
+      lowInterestHighInfluence: [
+        {
+          id: 'STK003',
+          name: 'Michael Chen',
+          role: 'Customer Representative',
+          organization: 'Client XYZ',
+          interest: 'Medium',
+          influence: 'High',
+          communicationFrequency: 'Monthly',
+          engagement: 'Neutral',
+          lastContact: '2023-02-28',
+          nextContact: '2023-03-30',
+          notes: 'Important client stakeholder. Concerned about timeline and deliverables.',
+          status: 'Active',
+          contactInfo: {
+            email: 'michael.chen@clientxyz.com',
+            phone: '+1-555-3456',
+            address: '789 Client Way, Chicago, IL'
+          },
+          communicationPreferences: {
+            preferredChannel: 'Phone',
+            frequency: 'Monthly',
+            bestTime: 'Late Afternoon (4-5pm)'
+          },
+          satisfaction: 65,
+          impact: 'High',
+          actionItems: [
+            {
+              id: '5',
+              title: 'Address timeline concerns',
+              status: 'Open',
+              dueDate: '2023-04-05',
+              priority: 'High'
+            }
+          ]
+        }
+      ],
+      lowInterestLowInfluence: [
+        {
+          id: 'STK004',
+          name: 'Emily Rodriguez',
+          role: 'Regulatory Affairs',
+          organization: 'Siemens Compliance',
+          interest: 'Low',
+          influence: 'Medium',
+          communicationFrequency: 'Monthly',
+          engagement: 'Neutral',
+          lastContact: '2023-03-05',
+          nextContact: '2023-04-05',
+          notes: 'Oversees compliance and regulatory aspects of the program.',
+          status: 'Active',
+          contactInfo: {
+            email: 'emily.rodriguez@siemens.com',
+            phone: '+1-555-4567',
+            address: '321 Compliance Ave, Washington DC'
+          },
+          communicationPreferences: {
+            preferredChannel: 'Email',
+            frequency: 'Monthly',
+            bestTime: 'Morning (9-11am)'
+          },
+          satisfaction: 72,
+          impact: 'Medium',
+          actionItems: [
+            {
+              id: '6',
+              title: 'Submit regulatory documents',
+              status: 'In Progress',
+              dueDate: '2023-04-10',
+              priority: 'Medium'
+            }
+          ]
+        },
+        {
+          id: 'STK005',
+          name: 'David Patel',
+          role: 'Finance Director',
+          organization: 'Siemens Financial',
+          interest: 'Medium',
+          influence: 'Medium',
+          communicationFrequency: 'Monthly',
+          engagement: 'Active',
+          lastContact: '2023-03-12',
+          nextContact: '2023-04-12',
+          notes: 'Oversees budget allocation and financial reporting.',
+          status: 'Active',
+          contactInfo: {
+            email: 'david.patel@siemens.com',
+            phone: '+1-555-5678',
+            address: '555 Financial District, New York, NY'
+          },
+          communicationPreferences: {
+            preferredChannel: 'Report',
+            frequency: 'Monthly',
+            bestTime: 'End of Month'
+          },
+          satisfaction: 80,
+          impact: 'Medium',
+          actionItems: [
+            {
+              id: '7',
+              title: 'Prepare Q2 financial forecast',
+              status: 'Open',
+              dueDate: '2023-04-20',
+              priority: 'High'
+            }
+          ]
+        }
+      ]
     }
   },
   qualityManagement: {
-    qualityMetrics: [],
-    qualityIssues: [],
-    qualityTrends: [],
-    complianceStatus: []
+    qualityMetrics: [
+      {
+        date: '2023-01',
+        planned: 95,
+        actual: 92,
+        target: 98
+      },
+      {
+        date: '2023-02',
+        planned: 95,
+        actual: 93,
+        target: 98
+      },
+      {
+        date: '2023-03',
+        planned: 96,
+        actual: 94,
+        target: 98
+      },
+      {
+        date: '2023-04',
+        planned: 96,
+        actual: 95,
+        target: 98
+      },
+      {
+        date: '2023-05',
+        planned: 97,
+        actual: 96,
+        target: 98
+      },
+      {
+        date: '2023-06',
+        planned: 97,
+        actual: 96.5,
+        target: 98
+      }
+    ],
+    qualityIssues: [
+      {
+        id: 'QI001',
+        title: 'Documentation Inconsistency',
+        description: 'Inconsistencies found between design specs and implementation docs',
+        severity: 'Medium',
+        status: 'In Progress',
+        component: 'Documentation',
+        reportedBy: 'Quality Team',
+        dateReported: '2023-05-10',
+        lastUpdated: '2023-05-15',
+        assignedTo: 'Sarah Johnson',
+        resolution: '',
+        impactAreas: ['Documentation', 'Development'],
+        relatedIssues: ['RI002']
+      },
+      {
+        id: 'QI002',
+        title: 'Performance Test Failure',
+        description: 'System response time exceeds threshold under high load conditions',
+        severity: 'High',
+        status: 'Open',
+        component: 'Backend Services',
+        reportedBy: 'Test Team',
+        dateReported: '2023-05-12',
+        lastUpdated: '2023-05-12',
+        assignedTo: 'Robert Chen',
+        resolution: '',
+        impactAreas: ['Performance', 'User Experience'],
+        relatedIssues: []
+      },
+      {
+        id: 'QI003',
+        title: 'Security Vulnerability',
+        description: 'Potential XSS vulnerability identified in form handling',
+        severity: 'Critical',
+        status: 'In Progress',
+        component: 'Frontend',
+        reportedBy: 'Security Audit',
+        dateReported: '2023-05-08',
+        lastUpdated: '2023-05-14',
+        assignedTo: 'David Patel',
+        resolution: '',
+        impactAreas: ['Security', 'Compliance'],
+        relatedIssues: ['RI005']
+      },
+      {
+        id: 'QI004',
+        title: 'UI Accessibility Issue',
+        description: 'Dashboard elements not properly accessible via screen readers',
+        severity: 'Medium',
+        status: 'Open',
+        component: 'Frontend',
+        reportedBy: 'UX Team',
+        dateReported: '2023-05-14',
+        lastUpdated: '2023-05-14',
+        assignedTo: 'Emily Rodriguez',
+        resolution: '',
+        impactAreas: ['Accessibility', 'User Experience'],
+        relatedIssues: []
+      },
+      {
+        id: 'QI005',
+        title: 'Database Query Optimization',
+        description: 'Inefficient query pattern causing increased load times in reporting module',
+        severity: 'Medium',
+        status: 'Resolved',
+        component: 'Database',
+        reportedBy: 'Performance Team',
+        dateReported: '2023-05-02',
+        lastUpdated: '2023-05-17',
+        assignedTo: 'Michael Smith',
+        resolution: 'Implemented query caching and index optimization',
+        impactAreas: ['Performance', 'Reliability'],
+        relatedIssues: []
+      },
+      {
+        id: 'QI006',
+        title: 'API Documentation Gap',
+        description: 'Missing documentation for newly added API endpoints',
+        severity: 'Low',
+        status: 'Closed',
+        component: 'API',
+        reportedBy: 'Integration Team',
+        dateReported: '2023-04-28',
+        lastUpdated: '2023-05-05',
+        assignedTo: 'John Wilson',
+        resolution: 'Updated API documentation with missing endpoints',
+        impactAreas: ['Documentation', 'Integration'],
+        relatedIssues: []
+      }
+    ],
+    qualityTrends: [
+      {
+        date: '2023-01',
+        defects: 24,
+        rework: 15,
+        compliance: 92
+      },
+      {
+        date: '2023-02',
+        defects: 21,
+        rework: 14,
+        compliance: 93
+      },
+      {
+        date: '2023-03',
+        defects: 18,
+        rework: 12,
+        compliance: 95
+      },
+      {
+        date: '2023-04',
+        defects: 15,
+        rework: 10,
+        compliance: 96
+      },
+      {
+        date: '2023-05',
+        defects: 12,
+        rework: 8,
+        compliance: 97
+      },
+      {
+        date: '2023-06',
+        defects: 10,
+        rework: 7,
+        compliance: 98
+      }
+    ],
+    complianceStatus: [
+      {
+        standard: 'ISO 9001:2015',
+        status: 'Compliant',
+        lastAudit: '2023-03-15',
+        nextAudit: '2023-09-15',
+        findings: []
+      },
+      {
+        standard: 'ISO 27001',
+        status: 'Partially Compliant',
+        lastAudit: '2023-02-20',
+        nextAudit: '2023-08-20',
+        findings: ['Documentation updates needed for risk assessment', 'Enhance access control monitoring']
+      },
+      {
+        standard: 'CMMI Level 4',
+        status: 'Compliant',
+        lastAudit: '2023-01-10',
+        nextAudit: '2023-07-10',
+        findings: []
+      },
+      {
+        standard: 'IEC 62304',
+        status: 'Partially Compliant',
+        lastAudit: '2023-04-05',
+        nextAudit: '2023-10-05',
+        findings: ['Update risk management documentation', 'Enhance traceability between requirements and tests']
+      }
+    ],
+    qualityMetricsSummary: {
+      defectDensity: 0.8,
+      testCoverage: 92,
+      codeReviewCoverage: 95,
+      automationRate: 85,
+      firstTimePassRate: 78,
+      technicalDebtIndex: 15
+    },
+    processAdherence: [
+      {
+        process: 'Requirements Review',
+        adherenceRate: 92,
+        trend: 'Improving'
+      },
+      {
+        process: 'Design Review',
+        adherenceRate: 88,
+        trend: 'Stable'
+      },
+      {
+        process: 'Code Review',
+        adherenceRate: 95,
+        trend: 'Improving'
+      },
+      {
+        process: 'Test Execution',
+        adherenceRate: 97,
+        trend: 'Stable'
+      },
+      {
+        process: 'Release Procedures',
+        adherenceRate: 94,
+        trend: 'Improving'
+      }
+    ],
+    qualityImprovements: [
+      {
+        id: 'QI001',
+        title: 'Automated Testing Framework',
+        description: 'Implement automated testing framework to increase test coverage and reliability',
+        status: 'In Progress',
+        startDate: '2023-04-15',
+        targetDate: '2023-07-30',
+        leader: 'Sarah Johnson',
+        type: 'Tool',
+        impact: 'High',
+        metrics: ['testCoverage', 'defectDensity', 'automationRate'],
+        progress: 65
+      },
+      {
+        id: 'QI002',
+        title: 'Code Review Process Enhancement',
+        description: 'Refine code review process with better guidelines and tooling',
+        status: 'Completed',
+        startDate: '2023-03-01',
+        targetDate: '2023-05-15',
+        actualDate: '2023-05-12',
+        leader: 'David Patel',
+        type: 'Process',
+        impact: 'Medium',
+        metrics: ['codeReviewCoverage', 'defectDensity'],
+        progress: 100
+      },
+      {
+        id: 'QI003',
+        title: 'Security Testing Training',
+        description: 'Training program for development team on security testing principles',
+        status: 'Planned',
+        startDate: '2023-07-01',
+        targetDate: '2023-08-15',
+        leader: 'Emily Rodriguez',
+        type: 'Training',
+        impact: 'High',
+        metrics: ['defectDensity', 'firstTimePassRate'],
+        progress: 0
+      },
+      {
+        id: 'QI004',
+        title: 'Technical Debt Reduction Initiative',
+        description: 'Focused effort to reduce technical debt in core modules',
+        status: 'In Progress',
+        startDate: '2023-05-01',
+        targetDate: '2023-09-30',
+        leader: 'Robert Taylor',
+        type: 'Process',
+        impact: 'High',
+        metrics: ['technicalDebtIndex'],
+        progress: 35
+      },
+      {
+        id: 'QI005',
+        title: 'QA Environment Upgrade',
+        description: 'Upgrade testing infrastructure to match production environment',
+        status: 'In Progress',
+        startDate: '2023-06-01',
+        targetDate: '2023-07-15',
+        leader: 'Michael Chen',
+        type: 'Infrastructure',
+        impact: 'Medium',
+        metrics: ['firstTimePassRate'],
+        progress: 45
+      }
+    ],
+    rootCauseAnalysis: [
+      {
+        category: 'Requirements',
+        count: 12,
+        subcategories: [
+          { name: 'Incomplete Requirements', count: 5 },
+          { name: 'Ambiguous Requirements', count: 4 },
+          { name: 'Changing Requirements', count: 3 }
+        ]
+      },
+      {
+        category: 'Design',
+        count: 8,
+        subcategories: [
+          { name: 'Architecture Issues', count: 3 },
+          { name: 'Interface Design', count: 3 },
+          { name: 'Performance Considerations', count: 2 }
+        ]
+      },
+      {
+        category: 'Coding',
+        count: 15,
+        subcategories: [
+          { name: 'Logic Errors', count: 6 },
+          { name: 'Error Handling', count: 4 },
+          { name: 'Concurrency Issues', count: 3 },
+          { name: 'Language Misuse', count: 2 }
+        ]
+      },
+      {
+        category: 'Testing',
+        count: 9,
+        subcategories: [
+          { name: 'Incomplete Test Cases', count: 4 },
+          { name: 'Test Environment', count: 3 },
+          { name: 'Test Data', count: 2 }
+        ]
+      },
+      {
+        category: 'Documentation',
+        count: 7,
+        subcategories: [
+          { name: 'Missing Documentation', count: 4 },
+          { name: 'Outdated Documentation', count: 3 }
+        ]
+      }
+    ],
+    qualityScorecard: {
+      overall: 87,
+      categories: [
+        { name: 'Process Compliance', score: 92, weight: 0.25 },
+        { name: 'Product Quality', score: 85, weight: 0.30 },
+        { name: 'Defect Management', score: 88, weight: 0.20 },
+        { name: 'Testing Effectiveness', score: 82, weight: 0.25 }
+      ],
+      previousScore: 83,
+      trend: 'Improving'
+    }
   },
   supplyChainManagement: {
-    suppliers: [],
-    orders: [],
-    supplyChainTrends: [],
-    inventoryLevels: []
+    suppliers: [
+      {
+        id: "SUP-001",
+        name: "AeroTech Components",
+        category: "Electronics",
+        status: "Active",
+        performance: 92,
+        lastAssessment: "2023-10-15",
+        nextAssessment: "2024-04-15",
+        issues: [],
+        location: "San Diego, CA",
+        contactInfo: {
+          name: "Michael Chen",
+          email: "mchen@aerotechcomp.com",
+          phone: "858-555-1234"
+        },
+        leadTime: 14,
+        onTimeDeliveryRate: 94,
+        qualityRating: 4.8,
+        contractDetails: {
+          startDate: "2023-01-01",
+          endDate: "2025-12-31",
+          value: 2500000,
+          terms: "Net 30"
+        },
+        certifications: ["ISO 9001", "AS9100D", "ITAR"],
+        riskLevel: "Low",
+        alternativeSuppliers: ["SUP-005", "SUP-006"]
+      },
+      {
+        id: "SUP-002",
+        name: "GlobalMetals Inc.",
+        category: "Raw Materials",
+        status: "At Risk",
+        performance: 68,
+        lastAssessment: "2023-11-10",
+        nextAssessment: "2024-02-10",
+        issues: ["Recent quality issues with titanium alloys", "Delayed shipments", "Price fluctuations"],
+        location: "Pittsburgh, PA",
+        contactInfo: {
+          name: "Sarah Johnson",
+          email: "sjohnson@globalmetals.com",
+          phone: "412-555-6789"
+        },
+        leadTime: 30,
+        onTimeDeliveryRate: 74,
+        qualityRating: 3.2,
+        contractDetails: {
+          startDate: "2023-01-01",
+          endDate: "2024-12-31",
+          value: 1800000,
+          terms: "Net 45"
+        },
+        certifications: ["ISO 9001"],
+        riskLevel: "High",
+        alternativeSuppliers: ["SUP-008"]
+      },
+      {
+        id: "SUP-003",
+        name: "Precision Engineering Ltd.",
+        category: "Machined Parts",
+        status: "Active",
+        performance: 87,
+        lastAssessment: "2023-09-20",
+        nextAssessment: "2024-03-20",
+        issues: ["Minor capacity constraints"],
+        location: "Wichita, KS",
+        contactInfo: {
+          name: "Robert Williams",
+          email: "rwilliams@precisioneng.com",
+          phone: "316-555-2345"
+        },
+        leadTime: 21,
+        onTimeDeliveryRate: 89,
+        qualityRating: 4.3,
+        contractDetails: {
+          startDate: "2022-07-01",
+          endDate: "2025-06-30",
+          value: 1200000,
+          terms: "Net 30"
+        },
+        certifications: ["ISO 9001", "AS9100D"],
+        riskLevel: "Medium",
+        alternativeSuppliers: ["SUP-007"]
+      },
+      {
+        id: "SUP-004",
+        name: "Avionic Systems International",
+        category: "Electronics",
+        status: "Active",
+        performance: 95,
+        lastAssessment: "2023-12-05",
+        nextAssessment: "2024-06-05",
+        issues: [],
+        location: "Austin, TX",
+        contactInfo: {
+          name: "Amanda Garcia",
+          email: "agarcia@avi-systems.com",
+          phone: "512-555-3456"
+        },
+        leadTime: 18,
+        onTimeDeliveryRate: 97,
+        qualityRating: 4.9,
+        contractDetails: {
+          startDate: "2023-03-01",
+          endDate: "2026-02-28",
+          value: 3200000,
+          terms: "Net 30"
+        },
+        certifications: ["ISO 9001", "AS9100D", "ITAR", "CMMI Level 5"],
+        riskLevel: "Low",
+        alternativeSuppliers: []
+      }
+    ],
+    orders: [
+      {
+        id: "ORD-1001",
+        supplierId: "SUP-001",
+        item: "Flight Control Modules",
+        quantity: 50,
+        status: "In Transit",
+        orderDate: "2023-11-15",
+        expectedDelivery: "2023-12-05",
+        price: 2850,
+        totalCost: 142500,
+        trackingInfo: {
+          trackingNumber: "ASI928374655",
+          carrier: "ExpressFreight",
+          currentLocation: "Denver, CO",
+          estimatedArrival: "2023-12-04",
+          lastUpdated: "2023-12-01"
+        },
+        priority: "High"
+      },
+      {
+        id: "ORD-1002",
+        supplierId: "SUP-002",
+        item: "Titanium Alloy Sheets",
+        quantity: 200,
+        status: "Delayed",
+        orderDate: "2023-10-10",
+        expectedDelivery: "2023-11-10",
+        price: 350,
+        totalCost: 70000,
+        trackingInfo: {
+          trackingNumber: "GMI847562944",
+          carrier: "FreightLine",
+          currentLocation: "Columbus, OH",
+          estimatedArrival: "2023-12-10",
+          lastUpdated: "2023-11-28"
+        },
+        priority: "Critical"
+      },
+      {
+        id: "ORD-1003",
+        supplierId: "SUP-003",
+        item: "Precision Gear Assemblies",
+        quantity: 100,
+        status: "Delivered",
+        orderDate: "2023-10-20",
+        expectedDelivery: "2023-11-15",
+        actualDelivery: "2023-11-12",
+        price: 420,
+        totalCost: 42000,
+        qualityInspection: {
+          passed: true,
+          date: "2023-11-14",
+          inspector: "David Martinez",
+          notes: "All assemblies meet specifications"
+        },
+        priority: "Medium"
+      },
+      {
+        id: "ORD-1004",
+        supplierId: "SUP-004",
+        item: "Navigation Subsystems",
+        quantity: 25,
+        status: "Pending",
+        orderDate: "2023-11-25",
+        expectedDelivery: "2023-12-15",
+        price: 3650,
+        totalCost: 91250,
+        priority: "High"
+      },
+      {
+        id: "ORD-1005",
+        supplierId: "SUP-001",
+        item: "Sensor Arrays",
+        quantity: 30,
+        status: "In Transit",
+        orderDate: "2023-11-18",
+        expectedDelivery: "2023-12-08",
+        price: 1280,
+        totalCost: 38400,
+        trackingInfo: {
+          trackingNumber: "ASI928374981",
+          carrier: "ExpressFreight",
+          currentLocation: "Albuquerque, NM",
+          estimatedArrival: "2023-12-07",
+          lastUpdated: "2023-12-02"
+        },
+        priority: "Medium"
+      }
+    ],
+    supplyChainTrends: [
+      {
+        date: "2023-07",
+        orders: 42,
+        deliveries: 38,
+        delays: 4,
+        costVariance: 1.5,
+        qualityIssues: 3,
+        onTimeDeliveryRate: 90.5,
+        averageLeadTime: 18.2,
+        backorderedItems: 5
+      },
+      {
+        date: "2023-08",
+        orders: 45,
+        deliveries: 40,
+        delays: 5,
+        costVariance: 2.1,
+        qualityIssues: 4,
+        onTimeDeliveryRate: 88.9,
+        averageLeadTime: 19.5,
+        backorderedItems: 7
+      },
+      {
+        date: "2023-09",
+        orders: 39,
+        deliveries: 37,
+        delays: 2,
+        costVariance: 0.8,
+        qualityIssues: 2,
+        onTimeDeliveryRate: 94.9,
+        averageLeadTime: 17.8,
+        backorderedItems: 4
+      },
+      {
+        date: "2023-10",
+        orders: 48,
+        deliveries: 43,
+        delays: 5,
+        costVariance: 1.9,
+        qualityIssues: 3,
+        onTimeDeliveryRate: 89.6,
+        averageLeadTime: 18.7,
+        backorderedItems: 6
+      },
+      {
+        date: "2023-11",
+        orders: 52,
+        deliveries: 48,
+        delays: 4,
+        costVariance: 1.2,
+        qualityIssues: 2,
+        onTimeDeliveryRate: 92.3,
+        averageLeadTime: 18.1,
+        backorderedItems: 5
+      }
+    ],
+    inventoryLevels: [
+      {
+        item: "Flight Control Modules",
+        current: 35,
+        minimum: 20,
+        maximum: 100,
+        reorderPoint: 40,
+        location: "Warehouse A, Section 3",
+        status: "Low Stock",
+        category: "Electronics",
+        unitCost: 2850,
+        totalValue: 99750,
+        lastRestocked: "2023-11-10",
+        turnoverRate: 2.3,
+        supplier: "AeroTech Components",
+        leadTime: 14,
+        demandForecast: 45,
+        itemCritical: true
+      },
+      {
+        item: "Titanium Alloy Sheets",
+        current: 85,
+        minimum: 50,
+        maximum: 250,
+        reorderPoint: 75,
+        location: "Warehouse B, Section 1",
+        status: "In Stock",
+        category: "Raw Materials",
+        unitCost: 350,
+        totalValue: 29750,
+        lastRestocked: "2023-10-28",
+        turnoverRate: 1.8,
+        supplier: "GlobalMetals Inc.",
+        leadTime: 30,
+        demandForecast: 130,
+        itemCritical: true
+      },
+      {
+        item: "Precision Gear Assemblies",
+        current: 120,
+        minimum: 75,
+        maximum: 300,
+        reorderPoint: 100,
+        location: "Warehouse A, Section 5",
+        status: "In Stock",
+        category: "Machined Parts",
+        unitCost: 420,
+        totalValue: 50400,
+        lastRestocked: "2023-11-14",
+        turnoverRate: 1.5,
+        supplier: "Precision Engineering Ltd.",
+        leadTime: 21,
+        demandForecast: 90,
+        itemCritical: false
+      },
+      {
+        item: "Navigation Subsystems",
+        current: 15,
+        minimum: 10,
+        maximum: 50,
+        reorderPoint: 20,
+        location: "Warehouse A, Section 2",
+        status: "Low Stock",
+        category: "Electronics",
+        unitCost: 3650,
+        totalValue: 54750,
+        lastRestocked: "2023-10-15",
+        turnoverRate: 1.2,
+        supplier: "Avionic Systems International",
+        leadTime: 18,
+        demandForecast: 25,
+        itemCritical: true
+      },
+      {
+        item: "Hydraulic Control Units",
+        current: 5,
+        minimum: 15,
+        maximum: 75,
+        reorderPoint: 25,
+        location: "Warehouse A, Section 4",
+        status: "Out of Stock",
+        category: "Mechanical",
+        unitCost: 1850,
+        totalValue: 9250,
+        lastRestocked: "2023-09-20",
+        turnoverRate: 2.5,
+        supplier: "Precision Engineering Ltd.",
+        leadTime: 21,
+        demandForecast: 30,
+        itemCritical: true
+      }
+    ],
+    keyMetrics: [
+      {
+        name: "On-Time Delivery",
+        value: 92.3,
+        target: 95.0,
+        unit: "%",
+        trend: "Improving",
+        periodChange: 2.7
+      },
+      {
+        name: "Supplier Performance Index",
+        value: 85.5,
+        target: 90.0,
+        unit: "%",
+        trend: "Stable",
+        periodChange: 0.3
+      },
+      {
+        name: "Inventory Turnover",
+        value: 6.8,
+        target: 8.0,
+        unit: "turns/year",
+        trend: "Improving",
+        periodChange: 0.5
+      },
+      {
+        name: "Lead Time",
+        value: 18.1,
+        target: 15.0,
+        unit: "days",
+        trend: "Declining",
+        periodChange: -0.6
+      },
+      {
+        name: "Order Fulfillment Rate",
+        value: 94.2,
+        target: 98.0,
+        unit: "%",
+        trend: "Improving",
+        periodChange: 1.8
+      }
+    ],
+    risks: [
+      {
+        id: "SCR-001",
+        title: "Titanium Supply Disruption",
+        description: "Potential disruption in titanium supply due to geopolitical tensions affecting global metal markets",
+        category: "Material Shortage",
+        impact: "High",
+        probability: "Medium",
+        status: "Monitoring",
+        mitigation: "Identify alternative suppliers and increase safety stock levels for critical materials",
+        owner: "Sarah Johnson",
+        suppliers: ["GlobalMetals Inc."],
+        lastUpdated: "2023-11-28"
+      },
+      {
+        id: "SCR-002",
+        title: "Logistics Delays",
+        description: "Increasing transportation delays due to port congestion and driver shortages",
+        category: "Logistics",
+        impact: "Medium",
+        probability: "High",
+        status: "Mitigated",
+        mitigation: "Implemented multi-carrier strategy and increased lead times in planning",
+        owner: "Robert Taylor",
+        suppliers: ["All"],
+        lastUpdated: "2023-11-15"
+      },
+      {
+        id: "SCR-003",
+        title: "Electronic Components Shortage",
+        description: "Global shortage of specialized microprocessors affecting production schedules",
+        category: "Material Shortage",
+        impact: "High",
+        probability: "High",
+        status: "Monitoring",
+        mitigation: "Long-term contracts with suppliers, exploring redesign options with alternative components",
+        owner: "Jennifer Lee",
+        suppliers: ["AeroTech Components", "Avionic Systems International"],
+        lastUpdated: "2023-11-20"
+      }
+    ],
+    sustainabilityMetrics: {
+      carbonFootprint: 12500,
+      recycledMaterials: 35.8,
+      energyEfficiency: 78,
+      wasteReduction: 12.5,
+      transportationEfficiency: 72
+    },
+    demandForecasting: [
+      {
+        period: "2023-Q4",
+        predictedDemand: 850,
+        actualDemand: 872,
+        variance: 2.6,
+        confidence: 90
+      },
+      {
+        period: "2024-Q1",
+        predictedDemand: 920,
+        confidence: 85
+      },
+      {
+        period: "2024-Q2",
+        predictedDemand: 980,
+        confidence: 75
+      },
+      {
+        period: "2024-Q3",
+        predictedDemand: 1050,
+        confidence: 65
+      }
+    ]
   }
 }; 

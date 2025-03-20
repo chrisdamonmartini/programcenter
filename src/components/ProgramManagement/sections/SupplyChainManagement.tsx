@@ -12,6 +12,7 @@ interface Supplier {
   lastAssessment: string;
   nextAssessment: string;
   issues: string[];
+  certifications?: string[];
 }
 
 interface Order {
@@ -19,7 +20,7 @@ interface Order {
   supplierId: string;
   item: string;
   quantity: number;
-  status: 'Pending' | 'In Transit' | 'Delivered' | 'Delayed';
+  status: 'Pending' | 'In Transit' | 'Delivered' | 'Delayed' | 'Canceled';
   orderDate: string;
   expectedDelivery: string;
   actualDelivery?: string;
@@ -82,6 +83,8 @@ const SupplyChainManagement: React.FC<SupplyChainManagementProps> = ({
         return darkMode ? 'bg-green-900 text-green-300' : 'bg-green-100 text-green-800';
       case 'Delayed':
         return darkMode ? 'bg-red-900 text-red-300' : 'bg-red-100 text-red-800';
+      case 'Canceled':
+        return darkMode ? 'bg-gray-900 text-gray-300' : 'bg-gray-100 text-gray-800';
       default:
         return darkMode ? 'bg-gray-600 text-gray-300' : 'bg-gray-100 text-gray-800';
     }
@@ -234,6 +237,16 @@ const SupplyChainManagement: React.FC<SupplyChainManagementProps> = ({
                   </ul>
                 </div>
               )}
+              {supplier.certifications && supplier.certifications.map((cert: string, idx: number) => (
+                <span
+                  key={idx}
+                  className={`px-2 py-1 rounded-full text-xs ${
+                    darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-700'
+                  }`}
+                >
+                  {cert}
+                </span>
+              ))}
             </div>
           ))}
         </div>

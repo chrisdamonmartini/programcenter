@@ -149,7 +149,10 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate, onCollapse }
               key={index}
               className={`flex items-center p-3 mb-2 rounded cursor-pointer
                 ${currentView === itemPath ? 'bg-blue-700' : 'hover:bg-blue-800'}`}
-              onClick={() => onNavigate(item.path)}
+              onClick={() => {
+                console.log('Navigating to:', item.path);
+                onNavigate(item.path);
+              }}
               title={collapsed ? item.title : undefined}
             >
               <span className={`text-xl ${collapsed ? 'mx-auto' : 'mr-4'}`}>{item.icon}</span>

@@ -104,7 +104,7 @@ const App: React.FC = () => {
             data={data.stakeholderManagement}
             preferences={preferences}
             onToggleCollapse={() => handleToggleCollapse('Stakeholder')}
-            key={forceUpdate}
+            key={`stakeholder-${Date.now()}-force`}
           />
         );
       case 'quality':
